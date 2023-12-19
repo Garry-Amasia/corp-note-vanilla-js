@@ -87,7 +87,7 @@ formEl.addEventListener("submit", submitHandler);
 
 // --------------FEEDBACK COMPONENT--------------
 //make GET request from the server
-fetch("https://bytegrad.com/course-assets/js/1/api/feedbacks")
+fetch("https://ytegrad.com/course-assets/js/1/api/feedbacks")
   .then((res) => res.json())
   .then((data) => {
     spinnerEl.remove();
@@ -116,7 +116,8 @@ fetch("https://bytegrad.com/course-assets/js/1/api/feedbacks")
       orderedListEl.insertAdjacentHTML("beforeend", feedbackItemHTML);
     });
   })
-  .catch(
-    (error) =>
-      (orderedListEl.textContent = `error happening,could not fetch data, status: ${error.message}`)
-  );
+  .catch((error) => {
+    spinnerEl.remove();
+    const errorHTML = `<div class="error__message"><h3>❌ ${error.message} ❌</h3></div>`;
+    orderedListEl.insertAdjacentHTML("beforeend", errorHTML);
+  });
