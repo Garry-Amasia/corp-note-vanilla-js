@@ -8,6 +8,31 @@ const submitButtonEl = document.querySelector(".submit-btn");
 const spinnerEl = document.querySelector(".spinner");
 const MAX_CHAR = 150;
 
+//render list on the ul(function)
+const renderListItem = (feedbackObj) => {
+  //create list in HTML format
+  const feedbackItemHTML = `
+  <li class="feedback">
+    <button class="upvote">
+        <i class="fa-solid fa-caret-up upvote__icon"></i>
+        <span class="upvote__count">${feedbackObj.upvoteCount}</span>
+    </button>
+    <section class="feedback__badge">
+        <p class="feedback__letter">${feedbackObj.badgeLetter}</p>
+    </section>
+    <div class="feedback__content">
+        <p class="feedback__company">${feedbackObj.company}</p>
+        <p class="feedback__text">${feedbackObj.text}</p>
+    </div>
+    <p class="feedback__date">${
+      feedbackObj.daysAgo === 0 ? "new" : `${feedbackObj.daysAgo}d`
+    }</p>
+</li>`;
+
+  //insert feedback into the list
+  orderedListEl.insertAdjacentHTML("beforeend", feedbackItemHTML);
+};
+
 const showVisualIndicator = (text) => {
   const className = text === "valid" ? "form--valid" : "form--invalid";
   console.log(`${className} runs`);
@@ -53,29 +78,19 @@ const submitHandler = (e) => {
   const company = wordContainHashTag.substring(1);
 
   //get batch letter character,upvote count and days ago
-  const batchLetter = company.substring(0, 1).toUpperCase();
+  const badgeLetter = company.substring(0, 1).toUpperCase();
   const upvoteCount = 0;
   const daysAgo = 0;
 
-  //create list in HTML format
-  const feedbackItemHTML = `
-  <li class="feedback">
-    <button class="upvote">
-        <i class="fa-solid fa-caret-up upvote__icon"></i>
-        <span class="upvote__count">${upvoteCount}</span>
-    </button>
-    <section class="feedback__badge">
-        <p class="feedback__letter">${batchLetter}</p>
-    </section>
-    <div class="feedback__content">
-        <p class="feedback__company">${company}</p>
-        <p class="feedback__text">${text}</p>
-    </div>
-    <p class="feedback__date">${daysAgo === 0 ? "new" : `${daysAgo}d`}</p>
-</li>`;
-
-  //insert feedback into the list
-  orderedListEl.insertAdjacentHTML("beforeend", feedbackItemHTML);
+  //render feedback created by user
+  const feedbackUser = {
+    company,
+    badgeLetter,
+    upvoteCount,
+    daysAgo,
+    text,
+  };
+  renderListItem(feedbackUser);
 
   //   reset to its default(textarea="",count=0,unfocus button)
   textareaEl.value = "";
@@ -87,33 +102,14 @@ formEl.addEventListener("submit", submitHandler);
 
 // --------------FEEDBACK COMPONENT--------------
 //make GET request from the server
-fetch("https://ytegrad.com/course-assets/js/1/api/feedbacks")
+fetch("https://bytegrad.com/course-assets/js/1/api/feedbacks")
   .then((res) => res.json())
   .then((data) => {
     spinnerEl.remove();
     console.log(data.feedbacks);
     data.feedbacks.forEach((singleFeedback) => {
-      //create list in HTML format
-      const feedbackItemHTML = `
-  <li class="feedback">
-    <button class="upvote">
-        <i class="fa-solid fa-caret-up upvote__icon"></i>
-        <span class="upvote__count">${singleFeedback.upvoteCount}</span>
-    </button>
-    <section class="feedback__badge">
-        <p class="feedback__letter">${singleFeedback.badgeLetter}</p>
-    </section>
-    <div class="feedback__content">
-        <p class="feedback__company">${singleFeedback.company}</p>
-        <p class="feedback__text">${singleFeedback.text}</p>
-    </div>
-    <p class="feedback__date">${
-      singleFeedback.daysAgo === 0 ? "new" : `${singleFeedback.daysAgo}d`
-    }</p>
-</li>`;
-
-      //insert feedback into the list
-      orderedListEl.insertAdjacentHTML("beforeend", feedbackItemHTML);
+      //render feedback from server
+      renderListItem(singleFeedback);
     });
   })
   .catch((error) => {
