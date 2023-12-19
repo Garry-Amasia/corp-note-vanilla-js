@@ -3,7 +3,9 @@ const textareaEl = document.querySelector(".form__textarea");
 const charEl = document.querySelector(".counter");
 const orderedListEl = document.querySelector(".feedbacks");
 const formEl = document.querySelector(".form");
+console.log(formEl);
 const submitButtonEl = document.querySelector(".submit-btn");
+const spinnerEl = document.querySelector(".spinner");
 const MAX_CHAR = 150;
 
 const showVisualIndicator = (text) => {
@@ -84,6 +86,37 @@ const submitHandler = (e) => {
 formEl.addEventListener("submit", submitHandler);
 
 // --------------FEEDBACK COMPONENT--------------
+//make GET request from the server
 fetch("https://bytegrad.com/course-assets/js/1/api/feedbacks")
   .then((res) => res.json())
-  .then((data) => console.log(data));
+  .then((data) => {
+    spinnerEl.remove();
+    console.log(data.feedbacks);
+    data.feedbacks.forEach((singleFeedback) => {
+      //create list in HTML format
+      const feedbackItemHTML = `
+  <li class="feedback">
+    <button class="upvote">
+        <i class="fa-solid fa-caret-up upvote__icon"></i>
+        <span class="upvote__count">${singleFeedback.upvoteCount}</span>
+    </button>
+    <section class="feedback__badge">
+        <p class="feedback__letter">${singleFeedback.badgeLetter}</p>
+    </section>
+    <div class="feedback__content">
+        <p class="feedback__company">${singleFeedback.company}</p>
+        <p class="feedback__text">${singleFeedback.text}</p>
+    </div>
+    <p class="feedback__date">${
+      singleFeedback.daysAgo === 0 ? "new" : `${singleFeedback.daysAgo}d`
+    }</p>
+</li>`;
+
+      //insert feedback into the list
+      orderedListEl.insertAdjacentHTML("beforeend", feedbackItemHTML);
+    });
+  })
+  .catch(
+    (error) =>
+      (orderedListEl.textContent = `error happening,could not fetch data, status: ${error.message}`)
+  );
