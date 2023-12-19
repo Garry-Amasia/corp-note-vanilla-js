@@ -28,7 +28,6 @@ const renderListItem = (feedbackObj) => {
       feedbackObj.daysAgo === 0 ? "new" : `${feedbackObj.daysAgo}d`
     }</p>
 </li>`;
-
   //insert feedback into the list
   orderedListEl.insertAdjacentHTML("beforeend", feedbackItemHTML);
 };
@@ -91,6 +90,24 @@ const submitHandler = (e) => {
     text,
   };
   renderListItem(feedbackUser);
+
+  //send feedbackUser to the server
+  fetch("https://bytegrad.com/course-assets/js/1/api/feedbacks", {
+    method: "POST",
+    body: JSON.stringify(feedbackUser),
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
+  })
+    .then((res) => {
+      if (!res.ok) {
+        console.log("something went wrong");
+        return;
+      }
+      console.log("success");
+    })
+    .catch((error) => console.log(error));
 
   //   reset to its default(textarea="",count=0,unfocus button)
   textareaEl.value = "";
