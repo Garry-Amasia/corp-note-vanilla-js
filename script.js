@@ -3,10 +3,10 @@ const textareaEl = document.querySelector(".form__textarea");
 const charEl = document.querySelector(".counter");
 const orderedListEl = document.querySelector(".feedbacks");
 const formEl = document.querySelector(".form");
-console.log(formEl);
 const submitButtonEl = document.querySelector(".submit-btn");
 const spinnerEl = document.querySelector(".spinner");
 const MAX_CHAR = 150;
+const BASE_API_URL = "https://bytegrad.com/course-assets/js/1/api";
 
 //render list on the ul(function)
 const renderListItem = (feedbackObj) => {
@@ -92,7 +92,7 @@ const submitHandler = (e) => {
   renderListItem(feedbackUser);
 
   //send feedbackUser to the server
-  fetch("https://bytegrad.com/course-assets/js/1/api/feedbacks", {
+  fetch(`${BASE_API_URL}/feedbacks`, {
     method: "POST",
     body: JSON.stringify(feedbackUser),
     headers: {
@@ -117,9 +117,24 @@ const submitHandler = (e) => {
 
 formEl.addEventListener("submit", submitHandler);
 
-// --------------FEEDBACK COMPONENT--------------
+// --------------FEEDBACK LIST COMPONENT--------------
+
+const clickHandler = (e) => {
+  //get clicked HTML element
+  const clickedEl = e.target;
+
+  //determine if user intended to upvote or expand
+  const isUpVoteStringIncluded = clickedEl.className.includes("upvote");
+
+  isUpVoteStringIncluded
+    ? console.log("do something about upvote logic")
+    : clickedEl.closest(".feedback").classList.toggle("feedback--expand");
+};
+
+orderedListEl.addEventListener("click", clickHandler);
+
 //make GET request from the server
-fetch("https://bytegrad.com/course-assets/js/1/api/feedbacks")
+fetch(`${BASE_API_URL}/feedbacks`)
   .then((res) => res.json())
   .then((data) => {
     spinnerEl.remove();
