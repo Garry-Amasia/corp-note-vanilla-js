@@ -2,6 +2,7 @@
 const textareaEl = document.querySelector(".form__textarea");
 const charEl = document.querySelector(".counter");
 const orderedListEl = document.querySelector(".feedbacks");
+console.log(orderedListEl.childNodes);
 const formEl = document.querySelector(".form");
 const submitButtonEl = document.querySelector(".submit-btn");
 const spinnerEl = document.querySelector(".spinner");
@@ -122,13 +123,29 @@ formEl.addEventListener("submit", submitHandler);
 const clickHandler = (e) => {
   //get clicked HTML element
   const clickedEl = e.target;
-
+  //   console.log(clickedEl);
   //determine if user intended to upvote or expand
   const isUpVoteStringIncluded = clickedEl.className.includes("upvote");
 
-  isUpVoteStringIncluded
-    ? console.log("do something about upvote logic")
-    : clickedEl.closest(".feedback").classList.toggle("feedback--expand");
+  if (isUpVoteStringIncluded) {
+    //pick closest .upvote button
+    const upVoteButtonEl = clickedEl.closest(".upvote");
+
+    //disable upvote button(prevent double-clicks and spamming)
+    upVoteButtonEl.disabled = true;
+
+    //select the upvote count element within the upvote button
+    let upvoteCountEl = upVoteButtonEl.querySelector(".upvote__count");
+
+    //get current displayed upvote count as a number (+)
+    let upvoteCount = +upvoteCountEl.textContent;
+    // upvoteCount += 1;
+
+    //set upvote count incremented by 1
+    upvoteCountEl.textContent = ++upvoteCount;
+  } else {
+    clickedEl.closest(".feedback").classList.toggle("feedback--expand");
+  }
 };
 
 orderedListEl.addEventListener("click", clickHandler);
@@ -138,7 +155,6 @@ fetch(`${BASE_API_URL}/feedbacks`)
   .then((res) => res.json())
   .then((data) => {
     spinnerEl.remove();
-    console.log(data.feedbacks);
     data.feedbacks.forEach((singleFeedback) => {
       //render feedback from server
       renderListItem(singleFeedback);
