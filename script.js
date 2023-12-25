@@ -2,12 +2,12 @@
 const textareaEl = document.querySelector(".form__textarea");
 const charEl = document.querySelector(".counter");
 const orderedListEl = document.querySelector(".feedbacks");
-console.log(orderedListEl.childNodes);
 const formEl = document.querySelector(".form");
 const submitButtonEl = document.querySelector(".submit-btn");
 const spinnerEl = document.querySelector(".spinner");
 const MAX_CHAR = 150;
 const BASE_API_URL = "https://bytegrad.com/course-assets/js/1/api";
+const hastagsListEl = document.querySelector(".hashtags");
 
 //render list on the ul(function)
 const renderListItem = (feedbackObj) => {
@@ -165,3 +165,34 @@ fetch(`${BASE_API_URL}/feedbacks`)
     const errorHTML = `<div class="error__message"><h3>❌ ${error.message} ❌</h3></div>`;
     orderedListEl.insertAdjacentHTML("beforeend", errorHTML);
   });
+
+//filtering list based on user click within hashtags section
+const hashtagsClickHandler = (e) => {
+  const clickedEl = e.target;
+  const companyNameClickedByUser = clickedEl.textContent
+    .substring(1)
+    .toLowerCase()
+    .trim();
+  if (clickedEl.className.includes("hashtags")) return;
+  //   console.log(companyNameClickedByUser);
+
+  //   iterate over each feedback item in the list
+
+  orderedListEl.childNodes.forEach((childNode) => {
+    // stop iteration if its text
+    if (childNode.nodeType === 3) return;
+
+    //extract company name
+    const companyNameFromFeedbacksLists = childNode
+      .querySelector(".feedback__company")
+      .textContent.toLowerCase()
+      .trim();
+    // console.log(companyNameFromFeedbacksLists);
+
+    if (companyNameClickedByUser !== companyNameFromFeedbacksLists) {
+      childNode.remove();
+    }
+  });
+};
+
+hastagsListEl.addEventListener("click", hashtagsClickHandler);
